@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS compiler-common
+FROM ubuntu:24.04 AS compiler-common
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
@@ -17,7 +17,7 @@ RUN apt-get update \
 
 FROM compiler-common AS compiler-stylesheet
 RUN cd ~ \
-&& git clone --single-branch --branch v5.4.0 https://github.com/gravitystorm/openstreetmap-carto.git --depth 1 \
+&& git clone --single-branch --branch v5.8.0 https://github.com/gravitystorm/openstreetmap-carto.git --depth 1 \
 && cd openstreetmap-carto \
 && sed -i 's/, "unifont Medium", "Unifont Upper Medium"//g' style/fonts.mss \
 && sed -i 's/"Noto Sans Tibetan Regular",//g' style/fonts.mss \
@@ -40,17 +40,19 @@ RUN mkdir -p /home/renderer/src \
 FROM compiler-common AS final
 
 # Based on
-# https://switch2osm.org/serving-tiles/manually-building-a-tile-server-18-04-lts/
+# https://switch2osm.org/serving-tiles/manually-building-a-tile-server-ubuntu-24-04-lts/
 ENV DEBIAN_FRONTEND=noninteractive
 ENV AUTOVACUUM=on
 ENV UPDATES=disabled
 ENV REPLICATION_URL=https://planet.openstreetmap.org/replication/hour/
 ENV MAX_INTERVAL_SECONDS=3600
-ENV PG_VERSION 15
+ENV PG_VERSION 16
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Get packages
+# sudo apt install screen locate libapache2-mod-tile renderd git tar unzip wget bzip2 apache2 lua5.1 mapnik-utils python3-mapnik python3-psycopg2 python3-yaml gdal-bin npm node-carto postgresql postgresql-contrib postgis postgresql-16-postgis-3 postgresql-16-postgis-3-scripts osm2pgsql net-tools curl
+
 RUN apt-get update \
 && apt-get install -y --no-install-recommends \
  apache2 \
@@ -63,8 +65,8 @@ RUN apt-get update \
  fonts-unifont \
  gnupg2 \
  gdal-bin \
- liblua5.3-dev \
- lua5.3 \
+ liblua5.4-dev \
+ lua5.4 \
  mapnik-utils \
  npm \
  osm2pgsql \
