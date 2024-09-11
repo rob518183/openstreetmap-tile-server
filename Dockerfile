@@ -51,13 +51,13 @@ ENV PG_VERSION 16
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Get packages
-# sudo apt install screen locate libapache2-mod-tile renderd git tar unzip wget bzip2 apache2 lua5.1 mapnik-utils python3-mapnik python3-psycopg2 python3-yaml gdal-bin npm node-carto postgresql postgresql-contrib postgis postgresql-16-postgis-3 postgresql-16-postgis-3-scripts osm2pgsql net-tools curl
 
 RUN apt-get update \
 && apt-get install -y --no-install-recommends \
  apache2 \
- cron \
- dateutils \
+ apt \
+ bzip2 \
+ curl \
  fonts-hanazono \
  fonts-noto-cjk \
  fonts-noto-hinted \
@@ -65,9 +65,14 @@ RUN apt-get update \
  fonts-unifont \
  gnupg2 \
  gdal-bin \
+ git \
+ install \
+ libapache2-mod-tile \
  liblua5.4-dev \
+ locate \
  lua5.4 \
  mapnik-utils \
+ net-tools \
  npm \
  osm2pgsql \
  osmium-tool \
@@ -76,14 +81,15 @@ RUN apt-get update \
  postgresql-$PG_VERSION-postgis-3 \
  postgresql-$PG_VERSION-postgis-3-scripts \
  postgis \
- python-is-python3 \
  python3-mapnik \
  python3-lxml \
  python3-psycopg2 \
- python3-shapely \
- python3-pip \
+ python3-yaml \
  renderd \
+ screen \
  sudo \
+ tar \
+ unzip \
  vim \
 && apt-get clean autoclean \
 && apt-get autoremove --yes \
@@ -104,7 +110,7 @@ RUN pip3 install \
  pyyaml
 
 # Install carto for stylesheet
-RUN npm install -g carto@1.2.0
+RUN npm install -g carto
 
 # Configure Apache
 RUN echo "LoadModule tile_module /usr/lib/apache2/modules/mod_tile.so" >> /etc/apache2/conf-available/mod_tile.conf \
@@ -117,7 +123,7 @@ RUN ln -sf /dev/stdout /var/log/apache2/access.log \
 # leaflet
 COPY leaflet-demo.html /var/www/html/index.html
 RUN cd /var/www/html/ \
-&& wget https://github.com/Leaflet/Leaflet/releases/download/v1.8.0/leaflet.zip \
+&& wget https://github.com/Leaflet/Leaflet/releases/download/v1.9.4/leaflet.zip \
 && unzip leaflet.zip \
 && rm leaflet.zip
 
